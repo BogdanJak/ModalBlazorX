@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="app.css" />
+    <link rel="stylesheet" href="ModalBlazorX.styles.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link href="_content/Syncfusion.Blazor.Themes/bootstrap5.css" rel="stylesheet" />
+    <script src="js/jquery-3.5.1.slim.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <style>
+        @@media (min-width: 768px) {
+            .main > div {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+        }
+
+        .modal {
+            overflow: hidden !important;
+            padding-right: 22px !important;
+        }
+
+        @@media (min-width: 576px) {
+            .modal-dialog {
+                margin: 10px !important;
+            }
+        }
+
+        .modal-tall .modal-dialog {
+            height: 100%;
+        }
+
+        .modal-tall .modal-content {
+            height: 97%;
+        }
+
+        .modal-open {
+            overflow: auto;
+            padding-right: 0 !important;
+        }
+
+        /* Credit: https://codepen.io/leenawat/pen/ORPbqE */
+        .alert-bottom {
+            position: fixed;
+            bottom: 5px;
+            left: 2%;
+            width: 96%;
+        }
+    </style>
+
+    <HeadOutlet @rendermode="InteractiveServer" />
+</head>
+
+<body>
+    <Routes @rendermode="InteractiveServer" />
+    <script src="_framework/blazor.web.js"></script>
+    <script>
+        window.setTitle = function (title) {
+            document.title = title;
+        }
+
+        window.dotNetObjectRef = null;
+        window.ytAPIReady = false;
+        window.playerReady = false;
+        window.player = null;
+
+        window.initializeYouTubePlayer = function () {
+            window.player = null;
+
+            var tag = document.createElement('script');
+            tag.src = 'https://www.youtube.com/iframe_api';
+            var firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        }
+
+        window.createPlayer = function () {
+            window.player = new YT.Player("player", {
+                videoId: '',
+                width: "100%",
+                height: "100%",
+                playerVars: {
+                    autoplay: 1,
+                    iv_load_policy: 3
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        window.playVideo = function (videoId) {
+            if (window.player) {
+                window.player.setVolume(30);
+                window.player.loadVideoById(videoId);
+            }
+        }
+
+        window.onPlayerStateChange = function (event) {
+            if (event.data === YT.PlayerState.ENDED) {
+                if (window.dotNetObjectRef) {
+                    window.dotNetObjectRef.invokeMethodAsync('OnModalCloseClicked');
+                }
+            }
+        }
+
+        window.onYouTubeIframeAPIReady = function () {
+            window.ytAPIReady = true;
+        }
+
+        window.onPlayerReady = function (event) {
+            window.playerReady = true;
+        }
+
+        window.checkAPIReady = function () {
+            if (window.ytAPIReady) {
+                return true;
+            }
+
+            return false;
+        }
+
+        window.checkPlayer = function () {
+            if (player && playerReady) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        window.closeModal = function (id) {
+            $("#" + id).modal("hide");
+            $("body").css("overflow-y", "auto");
+            toggleMainUI();
+        }
+
+        window.openModal = function (id, dotNetObjectRef) {
+            window.dotNetObjectRef = dotNetObjectRef;
+            $("#" + id).modal({ backdrop: "static", keyboard: false });
+            $("body").css("overflow-y", "hidden");
+            toggleMainUI();
+
+            if (player) {
+                player.playVideo();
+            }
+        }
+
+        window.setModalCloseStopVideo = function (id) {
+            $("#" + id).on("hidden.bs.modal", function () {
+                if (player) {
+                    player.stopVideo();
+                }
+            });
+        }
+
+        window.toggleMainUI = function () {
+            $("#main-ui").toggle();
+        }
+    </script>
+    <script src="_content/Syncfusion.Blazor.Core/scripts/syncfusion-blazor.min.js" type="text/javascript"></script>
+</body>
+
+</html>

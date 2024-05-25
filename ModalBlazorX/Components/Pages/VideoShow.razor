@@ -1,0 +1,22 @@
+﻿@page "/videoshow"
+
+@using ModalBlazorX.Models
+@using Syncfusion.Blazor.Buttons
+@using System.Net
+
+<h3>VideoShow</h3>
+
+<SfButton Content="Show Video" OnClick="ShowVideoHandle"></SfButton>
+
+
+@if (SelectedVideo != null && !string.IsNullOrEmpty(SelectedVideo.YTId))
+{
+    <WindowTitle Title=@WebUtility.HtmlDecode(SelectedVideo.Title) />
+    <VideoPopup SelectedVideo=@SelectedVideo OnPopupClosed=@OnVideoDismissed />
+}
+else
+{
+    <WindowTitle Title="Toby" />
+}
+
+

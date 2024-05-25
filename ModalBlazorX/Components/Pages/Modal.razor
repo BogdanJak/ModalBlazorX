@@ -1,0 +1,70 @@
+﻿@page "/bootstrap-modal"
+@inject IJSRuntime JS
+
+
+<h3>MODAL</h3>
+
+<div class="row">
+    <div class="col-lg-12">
+        <button type="button" @onclick='eventArgs=>ShowModal("exampleModalCenter")' class="btn btn-primary" data-toggle="modal" data-target="exampleModalCenter">Launch Modal Demo</button>
+    </div>
+</div>
+
+
+<div class="modal fade show" role="dialog" tabindex="-1" id="exampleModalCenter" aria-labelledby="exampleModallabel" aria-hidden="true" style="display:none; ">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modal title</h5>
+                <button type="button" @onclick='eventArgs=>HideModal("exampleModalCenter")' class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h1>Modal body text goes here.</h1>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @onclick='eventArgs=>HideModal("exampleModalCenter")'>Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private IJSObjectReference module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Modal.razor.js");
+            
+        }
+    }
+
+    private async void ShowModal(string elementID)
+    {
+        if (module != null)
+        {
+            await module.InvokeAsync<string>("showModal", elementID);
+        }
+        else
+        {
+            module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Modal.razor.js");
+            await module.InvokeAsync<string>("showModal", elementID);
+        }
+    }
+
+    private async void HideModal(string elementID)
+    {
+        if (module != null)
+        {
+            await module.InvokeAsync<string>("hideModal", elementID);
+        }
+        else
+        {
+            module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Modal.razor.js");
+            await module.InvokeAsync<string>("hideModal", elementID);
+        }
+    }
+}

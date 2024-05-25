@@ -1,0 +1,35 @@
+﻿@using System.Net 
+
+<div class="modal fade modal-tall" id="ytModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog mw-100" role="document" style="width: 100% !important;">
+        <div class="modal-content">
+            <div class="modal-header">
+                @if (string.IsNullOrEmpty(SelectedVideo.Group) || SelectedVideo.Group == "Recently Played" || SelectedVideo.Group == "Favorites")
+                {
+                    <div style="margin-right: 25px;" class="btn-group-toggle" data-toggle="buttons">
+                        <label class="btn btn-secondary @(AddedToFavorites ? "active": "")">
+                            @if (AddedToFavorites)
+                            {
+                                <Icon Path="css/bootstrap/icons/star-fill.svg" Title="Favorite" Invert=true />
+                            }
+                            else
+                            {
+                                <Icon Path="css/bootstrap/icons/star.svg" Title="Unfavorite" Invert=true />
+                            }
+                        </label>
+                    </div>
+                }
+                <div>
+                    <h5 class="modal-title">@WebUtility.HtmlDecode(SelectedVideo.Title)</h5>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick=@OnModalCloseClicked>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <YouTube VideoId=@SelectedVideo.YTId />
+            </div>
+        </div>
+    </div>
+</div>
